@@ -33,3 +33,10 @@ Validate the output format and ensure the grading script accepts the metrics:
 ```bash
 make grade-local
 ```
+
+### Step 6: Run Streamlit UI (Live Interactive Chat)
+To chat with the support agent live and handle human-in-the-loop approvals interactively, install Streamlit and run the app:
+```bash
+pip install streamlit
+streamlit run app.py
+```

@@ -29,6 +29,19 @@ import os
 from pydantic import BaseModel, Field
 from .llm import get_llm
 
+def extract_text_content(content):
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        text_parts = []
+        for part in content:
+            if isinstance(part, dict) and "text" in part:
+                text_parts.append(part["text"])
+            elif isinstance(part, str):
+                text_parts.append(part)
+        return "".join(text_parts)
+    return str(content)
+
 class Classification(BaseModel):
     route: str = Field(description="The classified intent route. One of: simple, tool, missing_info, risky, error.")
     risk_level: str = Field(description="The risk level of the query. Set to 'high' for risky routes, and 'low' otherwise.")
@@ -164,13 +177,16 @@ def answer_node(state: AgentState) -> dict:
 
 {context}
 
+CRITICAL SCOPING SAFEGUARD:
+If the user's query is unrelated to customer support (for example: cooking/recipes, general knowledge questions, creative writing, academic help, etc.), you MUST politely decline to answer. State clearly and politely that you can only assist with customer support requests related to our system, orders, accounts, and billing.
+
 If tools returned information, integrate it cleanly into your response without showing internal technical details or error traceback to the user.
 """
     llm = get_llm()
     response = llm.invoke(prompt)
 
     return {
-        "final_answer": response.content,
+        "final_answer": extract_text_content(response.content),
         "events": [make_event("answer", "completed", "generated grounded final answer")],
     }
 
@@ -184,11 +200,14 @@ def ask_clarification_node(state: AgentState) -> dict:
     prompt = f"""The user query is too vague or incomplete for us to proceed:
 Query: "{query}"
 
-Generate a polite clarification question to ask the customer to obtain the missing details.
+CRITICAL SCOPING SAFEGUARD:
+If the user's query is unrelated to customer support (e.g. cooking/recipes, general knowledge), do not ask for clarification. Instead, politely state that you can only assist with customer support requests.
+
+Otherwise, generate a polite clarification question to ask the customer to obtain the missing details.
 """
     llm = get_llm()
     response = llm.invoke(prompt)
-    question = response.content
+    question = extract_text_content(response.content)
 
     return {
         "pending_question": question,
@@ -210,7 +229,7 @@ Format: A clear, single-sentence summary of the action and risk.
 """
     llm = get_llm()
     response = llm.invoke(prompt)
-    proposed_action = response.content
+    proposed_action = extract_text_content(response.content)
 
     return {
         "proposed_action": proposed_action,
