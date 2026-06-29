@@ -42,34 +42,24 @@ My workflow is built as a state machine using LangGraph (`StateGraph`). It conta
 ## 4. Scenario results
 
 **Summary Metrics:**
-- **Total Scenarios:** 20
-- **Success Rate:** 95.00%
-- **Avg Nodes Visited:** 6.60
-- **Total Retries:** 8
-- **Total Interrupts:** 6
+- **Total Scenarios:** 10
+- **Success Rate:** 80.00%
+- **Avg Nodes Visited:** 4.40
+- **Total Retries:** 0
+- **Total Interrupts:** 0
 
 | Scenario | Expected route | Actual route | Success | Retries | Interrupts |
 |---|---|---|---:|---:|---:|
-| S01_simple | simple | simple | ✅ | 0 | 0 |
-| S02_tool | tool | tool | ✅ | 0 | 0 |
-| S03_missing | missing_info | missing_info | ✅ | 0 | 0 |
-| S04_risky | risky | risky | ✅ | 0 | 1 |
-| S05_error | error | error | ✅ | 2 | 0 |
-| S06_delete | risky | risky | ✅ | 0 | 1 |
-| S07_dead_letter | error | error | ✅ | 1 | 0 |
-| S08_simple_billing | simple | simple | ✅ | 0 | 0 |
-| S09_simple_hours | simple | simple | ✅ | 0 | 0 |
-| S10_tool_tracking | tool | tool | ✅ | 0 | 0 |
-| S11_tool_inventory | tool | tool | ✅ | 0 | 0 |
-| S12_missing_vague | missing_info | missing_info | ✅ | 0 | 0 |
-| S13_missing_order | missing_info | tool | ❌ | 0 | 0 |
-| S14_risky_refund | risky | risky | ✅ | 0 | 1 |
-| S15_risky_subscription | risky | risky | ✅ | 0 | 1 |
-| S16_risky_gdpr | risky | risky | ✅ | 0 | 1 |
-| S17_error_db | error | error | ✅ | 2 | 0 |
-| S18_error_api | error | error | ✅ | 2 | 0 |
-| S19_dead_letter_immediate | error | error | ✅ | 1 | 0 |
-| S20_risky_email_change | risky | risky | ✅ | 0 | 1 |
+| gq_d10_01 | simple | simple | ✅ | 0 | 0 |
+| gq_d10_02 | simple | simple | ✅ | 0 | 0 |
+| gq_d10_03 | simple | simple | ✅ | 0 | 0 |
+| gq_d10_04 | simple | simple | ✅ | 0 | 0 |
+| gq_d10_05 | simple | simple | ✅ | 0 | 0 |
+| gq_d10_06 | simple | simple | ✅ | 0 | 0 |
+| gq_d10_07 | simple | simple | ✅ | 0 | 0 |
+| gq_d10_08 | simple | simple | ✅ | 0 | 0 |
+| gq_d10_09 | simple | tool | ❌ | 0 | 0 |
+| gq_d10_10 | simple | tool | ❌ | 0 | 0 |
 
 ## 5. Failure analysis
 
@@ -77,7 +67,8 @@ My workflow is built as a state machine using LangGraph (`StateGraph`). It conta
 2. **Risky action without approval:** If a query involves sensitive operations like account deletion (`S06_delete`), it is routed to `risky_action` and then `approval`. If approval is rejected, we route to `clarify` instead of executing the tool, preventing unauthorized or unsafe operations.
 
 ### Actual Run Failure Modes:
-- **Scenario S13_missing_order** (Expected: `missing_info`, Actual: `tool`): The user asked 'Where is my order? Can you find it?'. The LLM routed this directly to the `tool` route (information lookup) because of the search intent, failing to identify that the query lacks the required order ID entity, which should have routed to `missing_info` for clarification.
+- **Scenario gq_d10_09** (Expected: `simple`, Actual: `tool`): The query asks for specific policy data/permissions (HR leaves/access level approvals). The LLM classified this as an information lookup (`tool`), whereas the static evaluation expected it to route as a general support QA (`simple`).
+- **Scenario gq_d10_10** (Expected: `simple`, Actual: `tool`): The query asks for specific policy data/permissions (HR leaves/access level approvals). The LLM classified this as an information lookup (`tool`), whereas the static evaluation expected it to route as a general support QA (`simple`).
 
 
 ## 6. Persistence / recovery evidence
