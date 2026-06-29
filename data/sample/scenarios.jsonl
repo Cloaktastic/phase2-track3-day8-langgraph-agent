@@ -5,3 +5,17 @@
 {"id":"S05_error","query":"Timeout failure while processing request","expected_route":"error","requires_approval":false,"should_retry":true,"tags":["retry"]}
 {"id":"S06_delete","query":"Delete customer account after support verification","expected_route":"risky","requires_approval":true,"should_retry":false,"tags":["hitl","destructive"]}
 {"id":"S07_dead_letter","query":"System failure cannot recover after multiple attempts","expected_route":"error","requires_approval":false,"should_retry":true,"max_attempts":1,"tags":["dead_letter","retry"]}
+{"id":"S08_simple_billing","query":"What payment methods and credit cards do you accept?","expected_route":"simple","requires_approval":false,"should_retry":false,"tags":["simple","billing"]}
+{"id":"S09_simple_hours","query":"What are your support hours during weekends and national holidays?","expected_route":"simple","requires_approval":false,"should_retry":false,"tags":["simple","hours"]}
+{"id":"S10_tool_tracking","query":"Track my package with tracking number 987654321","expected_route":"tool","requires_approval":false,"should_retry":false,"tags":["tool","shipping"]}
+{"id":"S11_tool_inventory","query":"Is the blue leather jacket in stock in size Medium?","expected_route":"tool","requires_approval":false,"should_retry":false,"tags":["tool","inventory"]}
+{"id":"S12_missing_vague","query":"I have a problem with my product and it is not working","expected_route":"missing_info","requires_approval":false,"should_retry":false,"tags":["clarification","vague"]}
+{"id":"S13_missing_order","query":"Where is my order? Can you find it?","expected_route":"missing_info","requires_approval":false,"should_retry":false,"tags":["clarification","order"]}
+{"id":"S14_risky_refund","query":"Initiate a chargeback/refund of $450.00 for order 88990","expected_route":"risky","requires_approval":true,"should_retry":false,"tags":["hitl","risky","billing"]}
+{"id":"S15_risky_subscription","query":"Cancel my annual VIP subscription immediately","expected_route":"risky","requires_approval":true,"should_retry":false,"tags":["hitl","risky","subscription"]}
+{"id":"S16_risky_gdpr","query":"Erase all personal details and purchase history from my account under GDPR compliance","expected_route":"risky","requires_approval":true,"should_retry":false,"tags":["hitl","destructive","privacy"]}
+{"id":"S17_error_db","query":"Database connection lost: Postgres server is not responding","expected_route":"error","requires_approval":false,"should_retry":true,"tags":["retry","system"]}
+{"id":"S18_error_api","query":"Third-party service returned 503 Service Unavailable when calling shipping API","expected_route":"error","requires_approval":false,"should_retry":true,"tags":["retry","api"]}
+{"id":"S19_dead_letter_immediate","query":"Network connection aborted during critical API handshake","expected_route":"error","requires_approval":false,"should_retry":true,"max_attempts":1,"tags":["dead_letter","retry","system"]}
+{"id":"S20_risky_email_change","query":"Change the email on my account from user@old.com to hacker@evil.com","expected_route":"risky","requires_approval":true,"should_retry":false,"tags":["hitl","risky","security"]}
+

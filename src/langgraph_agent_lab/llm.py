@@ -12,6 +12,9 @@ Usage in nodes:
 from __future__ import annotations
 
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def get_llm(model: str | None = None, temperature: float = 0.0):

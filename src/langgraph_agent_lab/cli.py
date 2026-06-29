@@ -25,6 +25,8 @@ def run_scenarios(
     output: Annotated[Path, typer.Option("--output")],
 ) -> None:
     """Run all grading scenarios and write metrics JSON."""
+    import time
+
     cfg = yaml.safe_load(config.read_text(encoding="utf-8"))
     scenarios = load_scenarios(cfg["scenarios_path"])
     checkpointer = build_checkpointer(cfg.get("checkpointer", "memory"), cfg.get("database_url"))
@@ -35,6 +37,9 @@ def run_scenarios(
         run_config = {"configurable": {"thread_id": state["thread_id"]}}
         final_state = graph.invoke(state, config=run_config)
         metrics.append(metric_from_state(final_state, scenario.expected_route.value, scenario.requires_approval))
+        import os
+        if os.getenv("RATE_LIMIT_SAFEGUARD", "true").lower() == "true":
+            time.sleep(4.0)  # Pause to respect Gemini API's 15 RPM rate limit
     report = summarize_metrics(metrics)
     write_metrics(report, output)
     if cfg.get("report_path"):
